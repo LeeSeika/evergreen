@@ -19,7 +19,8 @@ func Setup() *gin.Engine {
 	engine.GET("/hello", func(ctx *gin.Context) {
 		ctx.String(200, "hello")
 	})
-
 	engine.POST("/signup", controllers.SingUpHandler)
+	engine.POST("/login", controllers.LoginHandler)
+
 	return engine
 }

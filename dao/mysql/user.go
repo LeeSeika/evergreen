@@ -2,12 +2,19 @@ package mysql
 
 import (
 	"crypto/md5"
+	"database/sql"
 	"encoding/hex"
 	"errors"
 	"evergreen/model"
 )
 
 const secret = "leeseika/evergreen"
+
+var (
+	ErrorUserExist       = errors.New("user exists")
+	ErrorUserNotFound    = errors.New("user not found")
+	ErrorInvalidPassword = errors.New("invalid password")
+)
 
 // CheckUserExist 检查指定用户名的用户是否存在
 func CheckUserExist(username string) (err error) {
@@ -17,7 +24,7 @@ func CheckUserExist(username string) (err error) {
 		return err
 	}
 	if count > 0 {
-		return errors.New("user exists")
+		return ErrorUserExist
 	}
 	return
 }
@@ -37,4 +44,20 @@ func encryptPassword(oPassword string) string {
 	h := md5.New()
 	h.Write([]byte(secret))
 	return hex.EncodeToString(h.Sum([]byte(oPassword)))
+}
+
+func Login(user *model.User) error {
+	sqlStr := "select username, password from user where username = ?"
+	row := db.QueryRow(sqlStr, user.Username)
+	queryUser := model.User{}
+	if err := row.Scan(&queryUser.Username, &queryUser.Password); err != nil {
+		if err == sql.ErrNoRows {
+			return ErrorUserNotFound
+		}
+		return err
+	}
+	if queryUser.Password != encryptPassword(user.Password) {
+		return ErrorInvalidPassword
+	}
+	return nil
 }
