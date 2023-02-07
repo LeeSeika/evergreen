@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
+	"evergreen/controllers"
+	"evergreen/dao/mysql"
 	"evergreen/logger"
-	"evergreen/mysql"
 	"evergreen/pkg/snowflake"
 	"evergreen/redis"
 	"evergreen/routes"
@@ -18,8 +19,6 @@ import (
 	"time"
 
 	"go.uber.org/zap"
-
-	"github.com/spf13/viper"
 )
 
 func main() {
@@ -58,9 +57,15 @@ func main() {
 		return
 	}
 
+	err = controllers.InitTrans("zh")
+	if err != nil {
+		fmt.Printf("translator init error:%s\n", err)
+		return
+	}
+
 	engine := routes.Setup()
 
-	port := viper.GetInt("app.port")
+	port := settings.Conf.Port
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),
 		Handler: engine,

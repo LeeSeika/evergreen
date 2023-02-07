@@ -16,7 +16,7 @@
     port: 3306
     user: "leeseika"
     password: "123456"
-    dbname: "coredemo"
+    dbname: "evergreen"
     max_open_conn: 500
     max_idle_conn: 5
 
