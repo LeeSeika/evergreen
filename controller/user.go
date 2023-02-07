@@ -1,14 +1,19 @@
-package controllers
+package controller
 
 import (
 	"errors"
+	"evergreen/biz"
+	"evergreen/biz/logic"
 	"evergreen/dao/mysql"
-	"evergreen/logic"
 	"evergreen/model"
+	"evergreen/util"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 )
+
+const ContextUserIDKey = "userID"
 
 func SingUpHandler(c *gin.Context) {
 	var p model.ParamSignUp
@@ -16,10 +21,10 @@ func SingUpHandler(c *gin.Context) {
 		zap.L().Error("Sign up with invalid param", zap.Error(err))
 		errors, ok := err.(validator.ValidationErrors)
 		if !ok {
-			ResponseError(c, CodeInvalidParam)
+			ResponseError(c, biz.CodeInvalidParam)
 		} else {
-			errMsg := removeTopStruct(errors.Translate(trans))
-			responseErrorWithMsg(c, CodeInvalidParam, errMsg)
+			errMsg := util.RemoveTopStruct(errors.Translate(util.Trans))
+			ResponseErrorWithMsg(c, biz.CodeInvalidParam, errMsg)
 		}
 		return
 	}
@@ -27,9 +32,9 @@ func SingUpHandler(c *gin.Context) {
 	if err := logic.SignUp(&p); err != nil {
 		zap.L().Error("Sign up failed", zap.Error(err))
 		if errors.Is(err, mysql.ErrorUserExist) {
-			ResponseError(c, CodeUserExists)
+			ResponseError(c, biz.CodeUserExists)
 		} else {
-			ResponseError(c, CodeServerBusy)
+			ResponseError(c, biz.CodeServerBusy)
 		}
 		return
 	}
@@ -43,23 +48,24 @@ func LoginHandler(c *gin.Context) {
 		zap.L().Error("Log in with invalid params", zap.Error(err))
 		errors, ok := err.(validator.ValidationErrors)
 		if !ok {
-			ResponseError(c, CodeInvalidParam)
+			ResponseError(c, biz.CodeInvalidParam)
 		} else {
-			msg := removeTopStruct(errors.Translate(trans))
-			responseErrorWithMsg(c, CodeInvalidParam, msg)
+			msg := util.RemoveTopStruct(errors.Translate(util.Trans))
+			ResponseErrorWithMsg(c, biz.CodeInvalidParam, msg)
 		}
 		return
 	}
 
-	if err := logic.Login(&p); err != nil {
+	token, err := logic.Login(&p)
+	if err != nil {
 		zap.L().Error("Log in failed", zap.String("username", p.Username), zap.Error(err))
 		if errors.Is(err, mysql.ErrorUserNotFound) {
-			ResponseError(c, CodeUserNotFound)
+			ResponseError(c, biz.CodeUserNotFound)
 		} else {
-			ResponseError(c, CodeServerBusy)
+			ResponseError(c, biz.CodeServerBusy)
 		}
 		return
 	}
 
-	ResponseSuccess(c, nil)
+	ResponseSuccess(c, token)
 }

@@ -2,13 +2,13 @@ package main
 
 import (
 	"context"
-	"evergreen/controllers"
 	"evergreen/dao/mysql"
 	"evergreen/dao/redis"
 	"evergreen/logger"
 	"evergreen/pkg/snowflake"
-	"evergreen/routes"
+	"evergreen/router"
 	"evergreen/settings"
+	"evergreen/util"
 	"flag"
 	"fmt"
 	"log"
@@ -23,7 +23,7 @@ import (
 
 func main() {
 	var configFileName string
-	flag.StringVar(&configFileName, "conf", "./config.yaml", "程序读取的配置文件全路径")
+	flag.StringVar(&configFileName, "conf", "./conf/config.yaml", "程序读取的配置文件全路径")
 
 	err := settings.Init(configFileName)
 	if err != nil {
@@ -57,13 +57,13 @@ func main() {
 		return
 	}
 
-	err = controllers.InitTrans("zh")
+	err = util.InitTrans("zh")
 	if err != nil {
 		fmt.Printf("translator init error:%s\n", err)
 		return
 	}
 
-	engine := routes.Setup()
+	engine := router.Setup()
 
 	port := settings.Conf.Port
 	srv := &http.Server{

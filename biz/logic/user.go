@@ -3,6 +3,7 @@ package logic
 import (
 	"evergreen/dao/mysql"
 	"evergreen/model"
+	"evergreen/pkg/jwt"
 	"evergreen/pkg/snowflake"
 )
 
@@ -23,10 +24,13 @@ func SignUp(p *model.ParamSignUp) (err error) {
 	return mysql.InsertUser(user)
 }
 
-func Login(p *model.ParamLogin) (err error) {
+func Login(p *model.ParamLogin) (string, error) {
 	user := &model.User{
 		Username: p.Username,
 		Password: p.Password,
 	}
-	return mysql.Login(user)
+	if err := mysql.Login(user); err != nil {
+		return "", err
+	}
+	return jwt.GenToken(user.UserID, user.Username)
 }

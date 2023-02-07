@@ -47,17 +47,18 @@ func encryptPassword(oPassword string) string {
 }
 
 func Login(user *model.User) error {
-	sqlStr := "select username, password from user where username = ?"
-	row := db.QueryRow(sqlStr, user.Username)
-	queryUser := model.User{}
-	if err := row.Scan(&queryUser.Username, &queryUser.Password); err != nil {
+	originalPwd := user.Password
+	sqlStr := "select user_id, username, password from user where username = ?"
+
+	if err := db.Get(user, sqlStr, user.Username); err != nil {
 		if err == sql.ErrNoRows {
 			return ErrorUserNotFound
 		}
 		return err
 	}
-	if queryUser.Password != encryptPassword(user.Password) {
+	if user.Password != encryptPassword(originalPwd) {
 		return ErrorInvalidPassword
 	}
+
 	return nil
 }

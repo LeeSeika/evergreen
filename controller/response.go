@@ -1,17 +1,19 @@
-package controllers
+package controller
 
 import (
-	"github.com/gin-gonic/gin"
+	"evergreen/biz"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type ResponseData struct {
-	Code RespCode    `json:"code"`
-	Msg  interface{} `json:"msg"`
-	Data interface{} `json:"data"`
+	Code biz.RespCode `json:"code"`
+	Msg  interface{}  `json:"msg"`
+	Data interface{}  `json:"data"`
 }
 
-func ResponseError(c *gin.Context, code RespCode) {
+func ResponseError(c *gin.Context, code biz.RespCode) {
 	respData := &ResponseData{
 		Code: code,
 		Msg:  code.Msg(),
@@ -20,7 +22,7 @@ func ResponseError(c *gin.Context, code RespCode) {
 	c.JSON(http.StatusOK, respData)
 }
 
-func responseErrorWithMsg(c *gin.Context, code RespCode, msg interface{}) {
+func ResponseErrorWithMsg(c *gin.Context, code biz.RespCode, msg interface{}) {
 	respData := &ResponseData{
 		Code: code,
 		Msg:  msg,
@@ -31,8 +33,8 @@ func responseErrorWithMsg(c *gin.Context, code RespCode, msg interface{}) {
 
 func ResponseSuccess(c *gin.Context, data interface{}) {
 	respData := &ResponseData{
-		Code: CodeSuccess,
-		Msg:  CodeSuccess.Msg(),
+		Code: biz.CodeSuccess,
+		Msg:  biz.CodeSuccess.Msg(),
 		Data: data,
 	}
 	c.JSON(http.StatusOK, respData)

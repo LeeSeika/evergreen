@@ -1,4 +1,4 @@
-package controllers
+package biz
 
 type RespCode int64
 
@@ -9,6 +9,9 @@ const (
 	CodeUserNotFound
 	CodeInvalidPassword
 	CodeServerBusy
+	CodeAuthNotFound
+	CodeInvalidAuth
+	CodeInvalidToken
 )
 
 var codeMsgMap = map[RespCode]string{
@@ -18,6 +21,9 @@ var codeMsgMap = map[RespCode]string{
 	CodeUserNotFound:    "user not found",
 	CodeInvalidPassword: "invalid password",
 	CodeServerBusy:      "server busy",
+	CodeAuthNotFound:    "authorization not found",
+	CodeInvalidAuth:     "invalid format of authorization",
+	CodeInvalidToken:    "invalid token",
 }
 
 func (c RespCode) Msg() string {

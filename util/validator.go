@@ -1,4 +1,4 @@
-package controllers
+package util
 
 import (
 	"evergreen/model"
@@ -15,8 +15,7 @@ import (
 	zhTranslations "github.com/go-playground/validator/v10/translations/zh"
 )
 
-// 定义一个全局翻译器T
-var trans ut.Translator
+var Trans ut.Translator
 
 // InitTrans 初始化翻译器
 func InitTrans(locale string) (err error) {
@@ -46,7 +45,7 @@ func InitTrans(locale string) (err error) {
 		// locale 通常取决于 http 请求头的 'Accept-Language'
 		var ok bool
 		// 也可以使用 uni.FindTranslator(...) 传入多个locale进行查找
-		trans, ok = uni.GetTranslator(locale)
+		Trans, ok = uni.GetTranslator(locale)
 		if !ok {
 			return fmt.Errorf("uni.GetTranslator(%s) failed", locale)
 		}
@@ -54,19 +53,18 @@ func InitTrans(locale string) (err error) {
 		// 注册翻译器
 		switch locale {
 		case "en":
-			err = enTranslations.RegisterDefaultTranslations(v, trans)
+			err = enTranslations.RegisterDefaultTranslations(v, Trans)
 		case "zh":
-			err = zhTranslations.RegisterDefaultTranslations(v, trans)
+			err = zhTranslations.RegisterDefaultTranslations(v, Trans)
 		default:
-			err = enTranslations.RegisterDefaultTranslations(v, trans)
+			err = enTranslations.RegisterDefaultTranslations(v, Trans)
 		}
 		return
 	}
 	return
 }
 
-// removeTopStruct 去除提示信息中的结构体名称
-func removeTopStruct(fields map[string]string) map[string]string {
+func RemoveTopStruct(fields map[string]string) map[string]string {
 	res := map[string]string{}
 	for field, err := range fields {
 		res[field[strings.Index(field, ".")+1:]] = err
