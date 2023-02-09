@@ -21,9 +21,16 @@ func Setup() *gin.Engine {
 	engine.GET("/hello", func(ctx *gin.Context) {
 		ctx.String(200, "hello")
 	})
-	engine.POST("/signup", controller.SingUpHandler)
-	engine.POST("/login", controller.LoginHandler)
-	engine.GET("/ping", middleware.JWTAuthMiddleware(), controller.PingController)
+
+	group := engine.Group("/api/v1")
+
+	group.POST("/signup", controller.SingUpHandler)
+	group.POST("/login", controller.LoginHandler)
+
+	group.Use(middleware.JWTAuthMiddleware())
+	group.GET("/ping", controller.PingController)
+	group.GET("/community/list", controller.CommunityListHandler)
+	group.GET("/community/:id", controller.CommunityDetailHandler)
 
 	engine.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{

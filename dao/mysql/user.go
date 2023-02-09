@@ -4,17 +4,10 @@ import (
 	"crypto/md5"
 	"database/sql"
 	"encoding/hex"
-	"errors"
 	"evergreen/model"
 )
 
 const secret = "leeseika/evergreen"
-
-var (
-	ErrorUserExist       = errors.New("user exists")
-	ErrorUserNotFound    = errors.New("user not found")
-	ErrorInvalidPassword = errors.New("invalid password")
-)
 
 // CheckUserExist 检查指定用户名的用户是否存在
 func CheckUserExist(username string) (err error) {

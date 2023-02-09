@@ -21,7 +21,7 @@ func Init() error {
 	maxOpenConn := settings.Conf.MySQLConfig.MaxOpenConn
 	maxIdleConn := settings.Conf.MySQLConfig.MaxIdleConn
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", user, password, host, port, dbname)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&loc=Local", user, password, host, port, dbname)
 	var err error
 	db, err = sqlx.Connect("mysql", dsn)
 	if err != nil {
