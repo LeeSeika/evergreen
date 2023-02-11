@@ -7,6 +7,7 @@ import (
 	"evergreen/dao/mysql"
 	"evergreen/model"
 	"evergreen/util"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -56,7 +57,7 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	token, err := logic.Login(&p)
+	user, token, err := logic.Login(&p)
 	if err != nil {
 		zap.L().Error("Log in failed", zap.String("username", p.Username), zap.Error(err))
 		if errors.Is(err, mysql.ErrorUserNotFound) {
@@ -67,5 +68,9 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	ResponseSuccess(c, token)
+	ResponseSuccess(c, gin.H{
+		"user_id":   fmt.Sprintf("%d", user.UserID),
+		"user_name": user.Username,
+		"token":     token,
+	})
 }
