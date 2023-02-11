@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"evergreen/model"
+
+	"go.uber.org/zap"
 )
 
 const secret = "leeseika/evergreen"
@@ -23,13 +25,13 @@ func CheckUserExist(username string) (err error) {
 }
 
 // InsertUser 想数据库中插入一条新的用户记录
-func InsertUser(user *model.User) (err error) {
+func InsertUser(user *model.User) error {
 	// 对密码进行加密
 	user.Password = encryptPassword(user.Password)
 	// 执行SQL语句入库
 	sqlStr := `insert into user(user_id, username, password) values(?,?,?)`
-	_, err = db.Exec(sqlStr, user.UserID, user.Username, user.Password)
-	return
+	_, err := db.Exec(sqlStr, user.UserID, user.Username, user.Password)
+	return err
 }
 
 // encryptPassword 密码加密
@@ -54,4 +56,18 @@ func Login(user *model.User) error {
 	}
 
 	return nil
+}
+
+func GetUserById(uid int64) (*model.User, error) {
+	var user model.User
+	sqlStr := "select user_id, username from user where user_id = ?"
+	err := db.Get(&user, sqlStr, uid)
+	if err != nil {
+		zap.L().Error("get user by id error", zap.Int64("userID", uid), zap.Error(err))
+		if err == sql.ErrNoRows {
+			return nil, ErrorUserNotFound
+		}
+		return nil, err
+	}
+	return &user, nil
 }

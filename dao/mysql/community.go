@@ -27,6 +27,7 @@ func GetCommunityDetailByID(id int64) (*model.CommunityDetail, error) {
 	sqlStr := "select community_id, community_name, introduction, create_time from community where community_id = ?"
 	err := db.Get(&communityDetail, sqlStr, id)
 	if err != nil {
+		zap.L().Error("get community by id error", zap.Error(err))
 		if err == sql.ErrNoRows {
 			err = ErrorInvalidID
 		}

@@ -12,6 +12,7 @@ const (
 	CodeAuthNotFound
 	CodeInvalidAuth
 	CodeInvalidToken
+	CodeUserNotLogin
 )
 
 var codeMsgMap = map[RespCode]string{
@@ -24,6 +25,7 @@ var codeMsgMap = map[RespCode]string{
 	CodeAuthNotFound:    "authorization not found",
 	CodeInvalidAuth:     "invalid format of authorization",
 	CodeInvalidToken:    "invalid token",
+	CodeUserNotLogin:    "user not login",
 }
 
 func (c RespCode) Msg() string {
