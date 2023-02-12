@@ -33,6 +33,7 @@ func Setup() *gin.Engine {
 	group.GET("/community/:id", controller.CommunityDetailHandler)
 	group.GET("/post/:id", controller.GetPostDetailHandler)
 	group.GET("/post/list", controller.GetPostListHandler)
+	group.POST("/post/vote", controller.PostVoteController)
 	group.POST("/post/create", controller.CreatePostHandler)
 
 	engine.NoRoute(func(c *gin.Context) {

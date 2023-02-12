@@ -2,13 +2,19 @@ package logic
 
 import (
 	"evergreen/dao/mysql"
+	"evergreen/dao/redis"
 	"evergreen/model"
 	"evergreen/pkg/snowflake"
 )
 
 func CreatePost(p *model.Post) error {
 	p.ID = snowflake.GenID()
-	return mysql.CreatePost(p)
+	err := mysql.CreatePost(p)
+	if err != nil {
+		return err
+	}
+	err = redis.CreatePost(p.ID)
+	return err
 }
 
 func GetPostDetailByID(postID int64) (*model.ApiPostDetail, error) {

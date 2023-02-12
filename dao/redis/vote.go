@@ -1,0 +1,67 @@
+package redis
+
+import (
+	"errors"
+	"math"
+	"time"
+
+	"github.com/go-redis/redis"
+)
+
+const (
+	oneWeekInSec = 7 * 24 * 60 * 60 * 365
+	valuePerVote = 432
+)
+
+var (
+	ErrorVoteTimeExpired = errors.New("vote time expired")
+)
+
+func VoteForPost(userID, postID string, voteValue float64) error {
+	postTime := rdb.ZScore(getRedisKey(KeyPostTimeZSet), postID).Val()
+	if float64(time.Now().Unix())-postTime > oneWeekInSec {
+		return ErrorVoteTimeExpired
+	}
+	oldVoteValue := rdb.ZScore(getRedisKey(KeyPostVotedZSetPrefix+postID), userID).Val()
+	var voteDirection float64
+	if voteValue > oldVoteValue {
+		voteDirection = 1
+	} else {
+		voteDirection = -1
+	}
+	diff := math.Abs(oldVoteValue - voteValue)
+
+	pipeline := rdb.TxPipeline()
+	_, err := pipeline.ZIncrBy(getRedisKey(KeyPostScoreZSet), voteDirection*diff*valuePerVote, postID).Result()
+	if err != nil {
+		return err
+	}
+	if voteValue == 0 {
+		_, err = pipeline.ZRem(getRedisKey(KeyPostVotedZSetPrefix+postID), userID).Result()
+	} else {
+		_, err = pipeline.ZAdd(getRedisKey(KeyPostVotedZSetPrefix+postID), redis.Z{
+			Score:  voteValue,
+			Member: userID,
+		}).Result()
+	}
+	_, err = pipeline.Exec()
+
+	return err
+}
+
+func CreatePost(postID int64) error {
+	pipeline := rdb.TxPipeline()
+
+	pipeline.ZAdd(getRedisKey(KeyPostTimeZSet), redis.Z{
+		Score:  float64(time.Now().Unix()),
+		Member: postID,
+	}).Result()
+
+	pipeline.ZAdd(getRedisKey(KeyPostScoreZSet), redis.Z{
+		Score:  float64(time.Now().Unix()),
+		Member: postID,
+	}).Result()
+
+	_, err := pipeline.Exec()
+	return err
+}
