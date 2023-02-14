@@ -27,14 +27,18 @@ func Setup() *gin.Engine {
 	group.POST("/signup", controller.SingUpHandler)
 	group.POST("/login", controller.LoginHandler)
 
-	group.GET("/ping", controller.PingController)
 	group.Use(middleware.JWTAuthMiddleware())
+	group.GET("/ping", controller.PingController)
+
 	group.GET("/community/list", controller.CommunityListHandler)
 	group.GET("/community/:id", controller.CommunityDetailHandler)
 	group.GET("/post/:id", controller.GetPostDetailHandler)
 	group.GET("/post/list", controller.GetPostListHandler)
+	group.GET("/post/list/order", controller.GetPostListInOrderHandler)
+
 	group.POST("/post/vote", controller.PostVoteController)
 	group.POST("/post/create", controller.CreatePostHandler)
+	group.POST("/post/list/order", controller.GetCommunityPostListHandler)
 
 	engine.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{

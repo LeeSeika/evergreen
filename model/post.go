@@ -2,6 +2,11 @@ package model
 
 import "time"
 
+const (
+	OrderByTime  = "time"
+	OrderByScore = "score"
+)
+
 type Post struct {
 	ID          int64     `json:"id,string" db:"post_id"`
 	AuthorID    int64     `json:"author_id,string" db:"author_id" binding:"required"`
@@ -13,7 +18,8 @@ type Post struct {
 }
 
 type ApiPostDetail struct {
-	AuthorName string `json:"author_name"`
+	AuthorName  string `json:"author_name"`
+	VoteNumbers int64  `json:"vote_numbers"`
 	*Post
 	*CommunityDetail `json:"community"`
 }

@@ -24,6 +24,9 @@ func VoteForPost(userID, postID string, voteValue float64) error {
 	}
 	oldVoteValue := rdb.ZScore(getRedisKey(KeyPostVotedZSetPrefix+postID), userID).Val()
 	var voteDirection float64
+	if voteValue == oldVoteValue {
+		return nil
+	}
 	if voteValue > oldVoteValue {
 		voteDirection = 1
 	} else {
@@ -46,22 +49,5 @@ func VoteForPost(userID, postID string, voteValue float64) error {
 	}
 	_, err = pipeline.Exec()
 
-	return err
-}
-
-func CreatePost(postID int64) error {
-	pipeline := rdb.TxPipeline()
-
-	pipeline.ZAdd(getRedisKey(KeyPostTimeZSet), redis.Z{
-		Score:  float64(time.Now().Unix()),
-		Member: postID,
-	}).Result()
-
-	pipeline.ZAdd(getRedisKey(KeyPostScoreZSet), redis.Z{
-		Score:  float64(time.Now().Unix()),
-		Member: postID,
-	}).Result()
-
-	_, err := pipeline.Exec()
 	return err
 }

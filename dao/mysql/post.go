@@ -2,6 +2,9 @@ package mysql
 
 import (
 	"evergreen/model"
+	"strings"
+
+	"github.com/jmoiron/sqlx"
 
 	"go.uber.org/zap"
 )
@@ -35,4 +38,16 @@ func GetPostList(page, size int64) ([]*model.Post, error) {
 		return nil, err
 	}
 	return postList, nil
+}
+
+func GetPostListByIDs(ids []string) ([]*model.Post, error) {
+	sqlStr := "select post_id, title, content, author_id, community_id, create_time from post where post_id in (?) order by find_in_set(post_id, ?)"
+	query, args, err := sqlx.In(sqlStr, ids, strings.Join(ids, ","))
+	if err != nil {
+		return nil, err
+	}
+	var postList []*model.Post
+	newQueryStr := db.Rebind(query)
+	err = db.Select(&postList, newQueryStr, args...)
+	return postList, err
 }

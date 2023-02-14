@@ -13,8 +13,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const defaultPageValue = 1
-const defaultSizeValue = 10
+const (
+	defaultPageValue = 1
+	defaultSizeValue = 10
+)
 
 func CreatePostHandler(c *gin.Context) {
 	var p model.Post
@@ -80,4 +82,50 @@ func GetPostListHandler(c *gin.Context) {
 		return
 	}
 	ResponseSuccess(c, postDetailList)
+}
+
+func GetPostListInOrderHandler(c *gin.Context) {
+	// default value
+	p := model.ParamPostListInOrder{
+		Page:  1,
+		Size:  10,
+		Order: model.OrderByScore,
+	}
+	err := c.ShouldBindQuery(&p)
+	if err != nil {
+		zap.L().Error("get post list in order with invalid params", zap.Error(err))
+		ResponseError(c, biz.CodeServerBusy)
+		return
+	}
+	apiPostList, err := logic.GetPostListInOrder(&p)
+	if err != nil {
+		zap.L().Error("get post list in order error", zap.Error(err))
+		ResponseError(c, biz.CodeServerBusy)
+		return
+	}
+	ResponseSuccess(c, apiPostList)
+}
+
+func GetCommunityPostListHandler(c *gin.Context) {
+	p := model.ParamCommunityPostList{
+		ParamPostListInOrder: &model.ParamPostListInOrder{
+			Page:  1,
+			Size:  10,
+			Order: model.OrderByTime,
+		},
+		CommunityID: 0,
+	}
+	err := c.ShouldBindJSON(&p)
+	if err != nil {
+		zap.L().Error("get post list from community in order with invalid params", zap.Error(err))
+		ResponseError(c, biz.CodeServerBusy)
+		return
+	}
+	postList, err := logic.GetCommunityPostList(&p)
+	if err != nil {
+		zap.L().Error("get community post list in order error", zap.Error(err))
+		ResponseError(c, biz.CodeServerBusy)
+		return
+	}
+	ResponseSuccess(c, postList)
 }
