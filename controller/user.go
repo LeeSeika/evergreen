@@ -16,6 +16,10 @@ import (
 
 const ContextUserIDKey = "userID"
 
+// @Summary sign up a user
+// @Param request body model.ParamSignUp true "param sign up"
+// @Success 200
+// @Router /signup [post]
 func SingUpHandler(c *gin.Context) {
 	var p model.ParamSignUp
 	if err := c.ShouldBindJSON(&p); err != nil {
@@ -43,6 +47,12 @@ func SingUpHandler(c *gin.Context) {
 	ResponseSuccess(c, nil)
 }
 
+// @Summary sign up a user
+// @Param request body model.ParamLogin true "param sign up"
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {object} controller.LoginHandler.loginResponseMsg
+// @Router /login [post]
 func LoginHandler(c *gin.Context) {
 	var p model.ParamLogin
 	if err := c.ShouldBindJSON(&p); err != nil {
@@ -68,9 +78,17 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	ResponseSuccess(c, gin.H{
-		"user_id":   fmt.Sprintf("%d", user.UserID),
-		"user_name": user.Username,
-		"token":     token,
-	})
+	type loginResponseMsg struct {
+		UserID   string `json:"user_id"`
+		Username string `json:"username"`
+		Token    string `json:"token"`
+	}
+
+	loginMsg := loginResponseMsg{
+		UserID:   fmt.Sprintf("%d", user.UserID),
+		Username: user.Username,
+		Token:    token,
+	}
+
+	ResponseSuccess(c, loginMsg)
 }

@@ -18,6 +18,12 @@ const (
 	defaultSizeValue = 10
 )
 
+// @Summary create a post
+// @Param Authorization header string true "Bearer token"
+// @Param request body model.Post true "post model"
+// @Produce application/json
+// @Success 200
+// @Router /post/create [post]
 func CreatePostHandler(c *gin.Context) {
 	var p model.Post
 	uid, err := getCurrentUser(c)
@@ -49,6 +55,12 @@ func CreatePostHandler(c *gin.Context) {
 	ResponseSuccess(c, nil)
 }
 
+// @Summary get a post
+// @Param Authorization header string true "Bearer token"
+// @Param id path int true "post id"
+// @Produce application/json
+// @Success 200 {object} model.ApiPostDetail
+// @Router /post/{id} [get]
 func GetPostDetailHandler(c *gin.Context) {
 	postIDStr := c.Param("id")
 	postID, err := strconv.ParseInt(postIDStr, 10, 64)
@@ -66,6 +78,13 @@ func GetPostDetailHandler(c *gin.Context) {
 	ResponseSuccess(c, postDetail)
 }
 
+// @Summary get post list
+// @Param Authorization header string true "Bearer token"
+// @Param page query int false "page"
+// @Param size query int false "size"
+// @Produce application/json
+// @Success 200 {array} []model.ApiPostDetail
+// @Router /post/list [get]
 func GetPostListHandler(c *gin.Context) {
 	page, err := strconv.ParseInt(c.Query("page"), 10, 64)
 	if err != nil {
@@ -84,6 +103,14 @@ func GetPostListHandler(c *gin.Context) {
 	ResponseSuccess(c, postDetailList)
 }
 
+// @Summary get a post by given order
+// @Param Authorization header string true "Bearer token"
+// @Param page query int false "page"
+// @Param size query int flase "size"
+// @Param order query string false "order"
+// @Produce application/json
+// @Success 200 {array} []model.ApiPostDetail
+// @Router /post/list/order [get]
 func GetPostListInOrderHandler(c *gin.Context) {
 	// default value
 	p := model.ParamPostListInOrder{
@@ -106,6 +133,13 @@ func GetPostListInOrderHandler(c *gin.Context) {
 	ResponseSuccess(c, apiPostList)
 }
 
+// @Summary get post list from a specified community id by order
+// @Param Authorization header string true "Bearer token"
+// @Produce application/json
+// @Accept application/json
+// @Param request body model.ParamCommunityPostList true "param json"
+// @Success 200 {array} []model.ApiPostDetail
+// @Router /post/list/order [post]
 func GetCommunityPostListHandler(c *gin.Context) {
 	p := model.ParamCommunityPostList{
 		ParamPostListInOrder: &model.ParamPostListInOrder{

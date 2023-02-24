@@ -1,0 +1,325 @@
+basePath: /api/v1
+definitions:
+  controller.LoginHandler.loginResponseMsg:
+    properties:
+      token:
+        type: string
+      user_id:
+        type: string
+      username:
+        type: string
+    type: object
+  model.ApiPostDetail:
+    properties:
+      author_id:
+        example: "0"
+        type: string
+      author_name:
+        type: string
+      community:
+        $ref: '#/definitions/model.CommunityDetail'
+      community_id:
+        type: integer
+      content:
+        type: string
+      create_time:
+        type: string
+      id:
+        example: "0"
+        type: string
+      status:
+        type: integer
+      title:
+        type: string
+      vote_numbers:
+        type: integer
+    required:
+    - author_id
+    type: object
+  model.Community:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.CommunityDetail:
+    properties:
+      create_time:
+        type: string
+      id:
+        type: integer
+      introduction:
+        type: string
+      name:
+        type: string
+    type: object
+  model.ParamCommunityPostList:
+    properties:
+      community_id:
+        type: integer
+      order:
+        type: string
+      page:
+        type: integer
+      size:
+        type: integer
+    type: object
+  model.ParamLogin:
+    properties:
+      password:
+        type: string
+      user_name:
+        type: string
+    required:
+    - password
+    - user_name
+    type: object
+  model.ParamSignUp:
+    properties:
+      password:
+        type: string
+      re_password:
+        type: string
+      user_name:
+        type: string
+    required:
+    - password
+    - re_password
+    - user_name
+    type: object
+  model.Post:
+    properties:
+      author_id:
+        example: "0"
+        type: string
+      community_id:
+        type: integer
+      content:
+        type: string
+      create_time:
+        type: string
+      id:
+        example: "0"
+        type: string
+      status:
+        type: integer
+      title:
+        type: string
+    required:
+    - author_id
+    type: object
+info:
+  contact:
+    email: support@swagger.io
+    name: leeseika
+    url: additcd@qq.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: evergreen
+  version: "1.0"
+paths:
+  /community/{id}:
+    get:
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: community id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.CommunityDetail'
+      summary: return a specified community detail by id
+  /community/list:
+    get:
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/model.Community'
+              type: array
+            type: array
+      summary: return an array of all communities
+  /login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: param sign up
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.ParamLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.LoginHandler.loginResponseMsg'
+      summary: sign up a user
+  /post/{id}:
+    get:
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: post id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ApiPostDetail'
+      summary: get a post
+  /post/create:
+    post:
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: post model
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.Post'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: create a post
+  /post/list:
+    get:
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: size
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/model.ApiPostDetail'
+              type: array
+            type: array
+      summary: get post list
+  /post/list/order:
+    get:
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: size
+        in: query
+        name: size
+        type: integer
+      - description: order
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/model.ApiPostDetail'
+              type: array
+            type: array
+      summary: get a post by given order
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: param json
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.ParamCommunityPostList'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/model.ApiPostDetail'
+              type: array
+            type: array
+      summary: get post list from a specified community id by order
+  /signup:
+    post:
+      parameters:
+      - description: param sign up
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.ParamSignUp'
+      responses:
+        "200":
+          description: OK
+      summary: sign up a user
+swagger: "2.0"

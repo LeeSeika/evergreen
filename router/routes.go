@@ -8,6 +8,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	gs "github.com/swaggo/gin-swagger"
+
+	_ "evergreen/docs"
 )
 
 func Setup() *gin.Engine {
@@ -17,6 +21,8 @@ func Setup() *gin.Engine {
 
 	engine := gin.New()
 	engine.Use(logger.GinLogger(), logger.GinRecovery(true))
+
+	engine.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
 
 	engine.GET("/hello", func(ctx *gin.Context) {
 		ctx.String(200, "hello")
