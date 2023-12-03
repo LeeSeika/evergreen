@@ -67,7 +67,7 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	user, token, err := logic.Login(&p)
+	user, aToken, rToken, err := logic.Login(&p)
 	if err != nil {
 		zap.L().Error("Log in failed", zap.String("username", p.Username), zap.Error(err))
 		if errors.Is(err, mysql.ErrorUserNotFound) {
@@ -79,15 +79,17 @@ func LoginHandler(c *gin.Context) {
 	}
 
 	type loginResponseMsg struct {
-		UserID   string `json:"user_id"`
-		Username string `json:"username"`
-		Token    string `json:"token"`
+		UserID       string `json:"user_id"`
+		Username     string `json:"username"`
+		Token        string `json:"token"`
+		RefreshToken string `json:"refresh"`
 	}
 
 	loginMsg := loginResponseMsg{
-		UserID:   fmt.Sprintf("%d", user.UserID),
-		Username: user.Username,
-		Token:    token,
+		UserID:       fmt.Sprintf("%d", user.UserID),
+		Username:     user.Username,
+		Token:        aToken,
+		RefreshToken: rToken,
 	}
 
 	ResponseSuccess(c, loginMsg)

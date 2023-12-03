@@ -1,8 +1,10 @@
 package logic
 
 import (
+	"encoding/json"
 	"evergreen/dao/mysql"
 	"evergreen/dao/redis"
+	"evergreen/middleware/mq"
 	"evergreen/model"
 	"evergreen/pkg/snowflake"
 
@@ -11,12 +13,41 @@ import (
 
 func CreatePost(p *model.Post) error {
 	p.ID = snowflake.GenID()
+
 	err := mysql.CreatePost(p)
 	if err != nil {
 		return err
 	}
-	err = redis.CreatePost(p.CommunityID, p.ID)
-	return err
+
+	err = mq.PublishPost(p)
+	if err != nil {
+		// todo 消息冗余
+	}
+
+	return nil
+}
+
+func HandleCreatePost() {
+	msgs, err := mq.GetPostConsumerMsg()
+	if err != nil {
+		zap.L().Error("get post consumer msg failed", zap.Error(err))
+		return
+	}
+	for m := range msgs {
+		post := model.Post{}
+		err := json.Unmarshal(m.Body, &post)
+		if err != nil {
+			zap.L().Error("json unmarshal post failed, going to deliver to dlx queue", zap.Error(err))
+			m.Nack(false, false)
+			continue
+		}
+		err = redis.CreatePost(post.CommunityID, post.ID)
+		if err != nil {
+			zap.L().Error("add post to redis failed, going to deliver to dlx queue", zap.Error(err))
+			m.Nack(false, false)
+		}
+
+	}
 }
 
 func GetPostDetailByID(postID int64) (*model.ApiPostDetail, error) {

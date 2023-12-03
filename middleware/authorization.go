@@ -4,6 +4,7 @@ import (
 	"evergreen/biz"
 	"evergreen/controller"
 	"evergreen/pkg/jwt"
+	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -28,7 +29,8 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 
 		mc, err := jwt.ParseToken(parts[1])
 		if err != nil {
-			controller.ResponseError(c, biz.CodeInvalidToken)
+			// controller.ResponseError(c, biz.CodeInvalidToken)
+			controller.ResponseErrorWithHttpCode(c, biz.CodeInvalidToken, http.StatusUnauthorized)
 			c.Abort()
 			return
 		}

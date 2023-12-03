@@ -12,17 +12,23 @@
     max_backups: 7
 
   mysql:
-    host: "127.0.0.1"
-    port: 3306
-    user: "leeseika"
-    password: "123456"
+    host: "192.168.31.188"
+    port: 13306
+    user: "root"
+    password: "root"
     dbname: "evergreen"
     max_open_conn: 500
     max_idle_conn: 5
 
   redis:
-    host: "127.0.0.1"
-    port: 6379
+    host: "192.168.31.188"
+    port: 16379
     pool_size: 50
     password: ""
     db: 0
+
+  rabbitmq:
+      host: "192.168.31.188"
+      port: 5672
+      user: "root"
+      password: "root123"

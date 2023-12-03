@@ -34,15 +34,16 @@ func Init(configFileName string) (err error) {
 }
 
 type AppConfig struct {
-	Name         string `mapstructure:"name"`
-	Mode         string `mapstructure:"mode"`
-	StartTime    string `mapstructure:"start_time"`
-	Version      string `mapstructure:"version"`
-	MachineId    int64  `mapstructure:"machine_id"`
-	Port         int    `mapstructure:"port"`
-	*LogConfig   `mapstructure:"log"`
-	*MySQLConfig `mapstructure:"mysql"`
-	*RedisConfig `mapstructure:"redis"`
+	Name            string `mapstructure:"name"`
+	Mode            string `mapstructure:"mode"`
+	StartTime       string `mapstructure:"start_time"`
+	Version         string `mapstructure:"version"`
+	MachineId       int64  `mapstructure:"machine_id"`
+	Port            int    `mapstructure:"port"`
+	*LogConfig      `mapstructure:"log"`
+	*MySQLConfig    `mapstructure:"mysql"`
+	*RedisConfig    `mapstructure:"redis"`
+	*RabbitMQConfig `mapstructure:"rabbitmq"`
 }
 
 type LogConfig struct {
@@ -69,4 +70,11 @@ type RedisConfig struct {
 	DB       int    `mapstructure:"db"`
 	Port     int    `mapstructure:"port"`
 	PoolSize int    `mapstructure:"pool_size"`
+}
+
+type RabbitMQConfig struct {
+	User     string `mapstructure:"user"`
+	Password string `mapstructure:"password"`
+	Host     string `mapstructure:"host"`
+	Port     int    `mapstructure:"port"`
 }

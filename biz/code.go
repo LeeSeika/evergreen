@@ -13,6 +13,7 @@ const (
 	CodeInvalidAuth
 	CodeInvalidToken
 	CodeUserNotLogin
+	CodeCommentDeleted
 )
 
 var codeMsgMap = map[RespCode]string{
@@ -26,6 +27,7 @@ var codeMsgMap = map[RespCode]string{
 	CodeInvalidAuth:     "invalid format of authorization",
 	CodeInvalidToken:    "invalid token",
 	CodeUserNotLogin:    "user not login",
+	CodeCommentDeleted:  "comment has been deleted",
 }
 
 func (c RespCode) Msg() string {

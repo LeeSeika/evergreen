@@ -36,6 +36,31 @@ func Init() error {
 func Close() {
 	err := db.Close()
 	if err != nil {
-		zap.L().Error("mysql close error:%s", zap.Error(err))
+		zap.L().Error("mysql close error", zap.Error(err))
 	}
+}
+
+func BeginTransaction() (*sqlx.Tx, error, func(error)) {
+	zap.L().Info("Begin a transaction now...")
+	tx, err := db.Beginx()
+	if err != nil {
+		zap.L().Error("transaction begin failed", zap.Error(err))
+		return nil, err, nil
+	}
+	f := func(err error) {
+		if p := recover(); p != nil {
+			tx.Rollback()
+			zap.L().Error("transaction rollback cause of panic")
+			panic(p)
+		} else if err != nil {
+			// 下面logic业务产生error都会在这里打印
+			tx.Rollback()
+			zap.L().Error("transaction rollback case of error", zap.Error(err))
+		} else {
+			tx.Commit()
+			zap.L().Info("transaction committed")
+		}
+	}
+
+	return tx, err, f
 }

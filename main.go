@@ -16,9 +16,11 @@ package main
 
 import (
 	"context"
+	"evergreen/biz/logic"
 	"evergreen/dao/mysql"
 	"evergreen/dao/redis"
 	"evergreen/logger"
+	"evergreen/middleware/mq"
 	"evergreen/pkg/snowflake"
 	"evergreen/router"
 	"evergreen/settings"
@@ -65,6 +67,13 @@ func main() {
 		return
 	}
 
+	err = mq.Init()
+	if err != nil {
+		fmt.Printf("mq init error:%v\n", err)
+		return
+	}
+	defer mq.Close()
+
 	err = snowflake.Init(settings.Conf.StartTime, settings.Conf.MachineId)
 	if err != nil {
 		fmt.Printf("snowflake init error:%s\n", err)
@@ -91,6 +100,9 @@ func main() {
 			zap.L().Fatal("listen: %s\n", zap.Error(err))
 		}
 	}()
+
+	handleBiz()
+
 	// 等待中断信号来优雅地关闭服务器，为关闭服务器操作设置一个5秒的超时
 	quit := make(chan os.Signal, 1) // 创建一个接收信号的通道
 	// kill 默认会发送 syscall.SIGTERM 信号
@@ -108,4 +120,9 @@ func main() {
 		zap.L().Fatal("Server Shutdown: ", zap.Error(err))
 	}
 
+}
+
+func handleBiz() {
+	go logic.HandleCreatePost()
+	go logic.HandleAddComment()
 }

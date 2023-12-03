@@ -11,6 +11,8 @@ import (
 const (
 	oneWeekInSec = 7 * 24 * 60 * 60 * 365
 	valuePerVote = 432
+
+	valuePerComment = 25
 )
 
 var (
@@ -50,4 +52,12 @@ func VoteForPost(userID, postID string, voteValue float64) error {
 	_, err = pipeline.Exec()
 
 	return err
+}
+
+func AddCommentToPost(postID string) error {
+	_, err := rdb.ZIncrBy(getRedisKey(KeyPostScoreZSet), valuePerComment, postID).Result()
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -19,6 +19,7 @@ require (
 	github.com/swaggo/gin-swagger v1.5.3
 	github.com/swaggo/swag v1.8.10
 	go.uber.org/zap v1.21.0
+	github.com/rabbitmq/amqp091-go v1.8.1
 )
 
 require (

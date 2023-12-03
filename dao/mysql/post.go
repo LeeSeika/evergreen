@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"database/sql"
 	"evergreen/model"
 	"strings"
 
@@ -50,4 +51,24 @@ func GetPostListByIDs(ids []string) ([]*model.Post, error) {
 	newQueryStr := db.Rebind(query)
 	err = db.Select(&postList, newQueryStr, args...)
 	return postList, err
+}
+
+func IncrCommentCountAtPost(tx *sqlx.Tx, postId int64) (sql.Result, error) {
+	sqlStr := "update post set comment_count = comment_count + 1 where post_id = ?"
+	rs, err := tx.Exec(sqlStr, postId)
+	if err != nil {
+		zap.L().Error("Increase comment count error", zap.Int64("post_id", postId), zap.Error(err))
+		return nil, err
+	}
+	return rs, nil
+}
+
+func DecrCommentCountAtPost(tx *sqlx.Tx, postId int64) (sql.Result, error) {
+	sqlStr := "update post set comment_count = comment_count + 1 where post_id = ?"
+	rs, err := tx.Exec(sqlStr, postId)
+	if err != nil {
+		zap.L().Error("Increase comment count error", zap.Int64("post_id", postId), zap.Error(err))
+		return nil, err
+	}
+	return rs, nil
 }

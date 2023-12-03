@@ -13,11 +13,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const (
-	defaultPageValue = 1
-	defaultSizeValue = 10
-)
-
 // @Summary create a post
 // @Param Authorization header string true "Bearer token"
 // @Param request body model.Post true "post model"
@@ -88,11 +83,11 @@ func GetPostDetailHandler(c *gin.Context) {
 func GetPostListHandler(c *gin.Context) {
 	page, err := strconv.ParseInt(c.Query("page"), 10, 64)
 	if err != nil {
-		page = defaultPageValue
+		page = model.DefaultPostPageValue
 	}
 	size, err := strconv.ParseInt(c.Query("size"), 10, 64)
 	if err != nil {
-		size = defaultSizeValue
+		size = model.DefaultPostSizeValue
 	}
 	postDetailList, err := logic.GetPostDetailList(page, size)
 	if err != nil {
@@ -114,8 +109,8 @@ func GetPostListHandler(c *gin.Context) {
 func GetPostListInOrderHandler(c *gin.Context) {
 	// default value
 	p := model.ParamPostListInOrder{
-		Page:  1,
-		Size:  10,
+		Page:  model.DefaultPostPageValue,
+		Size:  model.DefaultPostSizeValue,
 		Order: model.OrderByScore,
 	}
 	err := c.ShouldBindQuery(&p)
@@ -143,8 +138,8 @@ func GetPostListInOrderHandler(c *gin.Context) {
 func GetCommunityPostListHandler(c *gin.Context) {
 	p := model.ParamCommunityPostList{
 		ParamPostListInOrder: &model.ParamPostListInOrder{
-			Page:  1,
-			Size:  10,
+			Page:  model.DefaultPostPageValue,
+			Size:  model.DefaultPostSizeValue,
 			Order: model.OrderByTime,
 		},
 		CommunityID: 0,
