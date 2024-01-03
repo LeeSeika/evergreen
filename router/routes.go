@@ -48,7 +48,7 @@ func Setup() *gin.Engine {
 	group.GET("/post/list", controller.GetPostListHandler)
 	group.GET("/post/list/order", controller.GetPostListInOrderHandler)
 
-	group.POST("/post/vote", controller.PostVoteController)
+	group.POST("/vote", controller.PostVoteController)
 	group.POST("/post/create", controller.CreatePostHandler)
 	group.POST("/post/list/order", controller.GetCommunityPostListHandler)
 

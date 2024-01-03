@@ -12,7 +12,7 @@ const (
 	oneWeekInSec = 7 * 24 * 60 * 60 * 365
 	valuePerVote = 432
 
-	valuePerComment = 25
+	valuePerComment = 250
 )
 
 var (

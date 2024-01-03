@@ -86,7 +86,7 @@ func GetCommentInOrder(c *gin.Context) {
 	p := model.ParamComments{
 		ParamCommentsInOrder: &model.ParamCommentsInOrder{
 			Page:  model.DefaultCommentPageValue,
-			Size:  model.DefaultPostSizeValue,
+			Size:  model.DefaultCommentSizeValue,
 			Order: model.OrderByScore,
 		},
 	}

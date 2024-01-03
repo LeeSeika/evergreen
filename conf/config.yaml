@@ -1,4 +1,4 @@
-  name: "web_app"
+  name: "evergreen"
   mode: "dev"
   start_time: "2023-01-01"
   machine_id: 1
@@ -6,7 +6,7 @@
 
   log:
     level: "debug"
-    filename: "web_app.log"
+    filename: "evergreen.log"
     max_size: 300
     max_age: 30
     max_backups: 7

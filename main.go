@@ -97,7 +97,7 @@ func main() {
 	go func() {
 		// 开启一个goroutine启动服务
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			zap.L().Fatal("listen: %s\n", zap.Error(err))
+			zap.L().Fatal("listen failed", zap.Error(err))
 		}
 	}()
 

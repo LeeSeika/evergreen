@@ -64,7 +64,7 @@ func IncrCommentCountAtPost(tx *sqlx.Tx, postId int64) (sql.Result, error) {
 }
 
 func DecrCommentCountAtPost(tx *sqlx.Tx, postId int64) (sql.Result, error) {
-	sqlStr := "update post set comment_count = comment_count + 1 where post_id = ?"
+	sqlStr := "update post set comment_count = comment_count - 1 where post_id = ?"
 	rs, err := tx.Exec(sqlStr, postId)
 	if err != nil {
 		zap.L().Error("Increase comment count error", zap.Int64("post_id", postId), zap.Error(err))
