@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: evergreen-ingress
+  namespace: evergreen
+spec:
+  ingressClassName: traefik # k3d 默认使用 traefik
+  rules:
+    - host: evergreen.local # 本地域名，需要在 hosts 文件中配置
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: evergreen
+                port:
+                  number: 8000

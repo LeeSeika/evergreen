@@ -20,7 +20,6 @@ import (
 	"evergreen/dao/mysql"
 	"evergreen/dao/redis"
 	"evergreen/logger"
-	"evergreen/middleware/mq"
 	"evergreen/pkg/snowflake"
 	"evergreen/router"
 	"evergreen/settings"
@@ -55,24 +54,24 @@ func main() {
 	defer zap.L().Sync()
 
 	err = mysql.Init()
-	if err != nil {
-		fmt.Printf("logger init error:%s\n", err)
-		return
-	}
+	// if err != nil {
+	// 	fmt.Printf("logger init error:%s\n", err)
+	// 	return
+	// }
 	defer mysql.Close()
 
 	err = redis.Init()
-	if err != nil {
-		fmt.Printf("redis init error:%s\n", err)
-		return
-	}
+	// if err != nil {
+	// 	fmt.Printf("redis init error:%s\n", err)
+	// 	return
+	// }
 
-	err = mq.Init()
-	if err != nil {
-		fmt.Printf("mq init error:%v\n", err)
-		return
-	}
-	defer mq.Close()
+	// err = mq.Init()
+	// if err != nil {
+	// 	fmt.Printf("mq init error:%v\n", err)
+	// 	return
+	// }
+	// defer mq.Close()
 
 	err = snowflake.Init(settings.Conf.StartTime, settings.Conf.MachineId)
 	if err != nil {
@@ -101,7 +100,7 @@ func main() {
 		}
 	}()
 
-	handleBiz()
+	// handleBiz()
 
 	// 等待中断信号来优雅地关闭服务器，为关闭服务器操作设置一个5秒的超时
 	quit := make(chan os.Signal, 1) // 创建一个接收信号的通道
